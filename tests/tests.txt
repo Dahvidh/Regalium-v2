@@ -1,0 +1,52 @@
+# Tests
+
+## Test 1 - Verify the Regalium backend is reachable through the live DApp [sanity]
+Viewport: desktop
+Covers: AppDeploy backend health endpoint, frontend API integration, backend status indicator
+Description: Verifies the deployed frontend can reach its AppDeploy backend and exposes the resulting service state.
+Steps:
+1. Open the Regalium homepage
+2. Observe the project stats row
+Expected: The Regalium backend status resolves to ONLINE and the page remains usable.
+
+## Test 2 - Preserve the wallet purchase workflow and backend purchase verification
+Viewport: desktop
+Covers: wallet discovery, Polygon Amoy network state, presale transaction submission, transaction confirmation, backend purchase verification, persisted purchase record
+Description: Verifies a successful purchase is confirmed on-chain and then submitted to the backend for verification and persistence.
+Steps:
+1. Open Buy RGLM
+2. Connect a supported EVM wallet on Polygon Amoy with sufficient testnet POL
+3. Accept the Terms & Conditions
+4. Enter a valid purchase amount
+5. Confirm the transaction in the wallet
+6. Wait for the transaction to be mined
+Expected: The DApp shows the transaction as confirmed, calls the Regalium backend verification endpoint, and reports backend verification when the receipt contains a successful RGLM transfer to the connected wallet.
+
+## Test 3 - Reject invalid purchase input before a backend or blockchain write
+Viewport: mobile
+Covers: purchase amount validation, terms acknowledgement guardrail, mobile purchase interaction
+Description: Verifies invalid purchase input cannot initiate a purchase.
+Steps:
+1. Open Buy RGLM on a mobile viewport
+2. Enter an invalid or empty purchase amount
+3. Observe the validation response
+4. Enter a valid amount without accepting the terms
+Expected: The DApp rejects invalid input and does not initiate a blockchain transaction or backend purchase-verification write.
+
+## Test 4 - Show a safe backend failure state after a confirmed blockchain transaction
+Viewport: desktop
+Covers: backend error handling, on-chain confirmation fallback, transaction status visibility
+Description: Verifies a backend outage does not falsely mark an already confirmed blockchain transaction as failed.
+Steps:
+1. Complete a valid Polygon Amoy purchase
+2. Simulate or encounter temporary backend unavailability after the transaction confirms
+Expected: The DApp continues to show the transaction as confirmed and tells the user that backend verification is temporarily unavailable, while keeping the PolygonScan transaction link available.
+
+## Test 5 - Read persisted purchase history for a connected wallet
+Viewport: desktop
+Covers: backend purchase-history API, database persistence, wallet-scoped records
+Description: Verifies previously backend-verified purchases can be retrieved for the same wallet without exposing another wallet's records.
+Steps:
+1. Use a wallet with at least one previously backend-verified purchase
+2. Request that wallet's purchase history through the DApp backend workflow
+Expected: The backend returns only the purchase records stored for that wallet, including transaction hash, native value, RGLM amount and block number.
