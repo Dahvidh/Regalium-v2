@@ -3,7 +3,7 @@ import { api } from './lib/api';
 import { ArrowRight, Check, ChevronDown, Coins, Copy, ExternalLink, Gamepad2, Menu, RefreshCw, ShieldCheck, Sparkles, Trophy, Wallet, X, Zap } from 'lucide-react';
 type Provider = { request: (args: { method: string; params?: unknown[] }) => Promise<unknown>; on?: (event: string, handler: (...args: unknown[]) => void) => void; removeListener?: (event: string, handler: (...args: unknown[]) => void) => void };
 import { CONTRACTS, EXPLORERS, POLYGON_AMOY } from './blockchain/config';
-import { encodeBalanceOf, hex, rpc as blockchainRpc } from './blockchain/rpc';
+import { encodeBalanceOf, hex } from './blockchain/rpc';
 
 type WalletProvider = { info: { uuid: string; name: string; icon?: string }; provider: Provider };
 type WalletState = { address: string; chainId: string; name: string } | null;
