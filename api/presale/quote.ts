@@ -1,6 +1,6 @@
-import type { ApiRequest, ApiResponse } from "../_lib/http";
-import { errorResponse, methodNotAllowed, queryString } from "../_lib/http";
-import { decimalToWei, getPresaleRate } from "../_lib/blockchain";
+import type { ApiRequest, ApiResponse } from "../../server/http";
+import { errorResponse, methodNotAllowed, queryString } from "../../server/http";
+import { decimalToWei, getPresaleRate } from "../../server/blockchain";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
