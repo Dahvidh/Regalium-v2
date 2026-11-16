@@ -1,7 +1,7 @@
-import type { ApiRequest, ApiResponse } from "../_lib/http";
-import { errorResponse, methodNotAllowed } from "../_lib/http";
-import { isTransactionHash, isWalletAddress, verifyTransaction } from "../_lib/blockchain";
-import { saveVerifiedPurchase } from "../_lib/purchases";
+import type { ApiRequest, ApiResponse } from "../../server/http";
+import { errorResponse, methodNotAllowed } from "../../server/http";
+import { isTransactionHash, isWalletAddress, verifyTransaction } from "../../server/blockchain";
+import { saveVerifiedPurchase } from "../../server/purchases";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
