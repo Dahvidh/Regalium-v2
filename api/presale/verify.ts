@@ -6,8 +6,8 @@ import { saveVerifiedPurchase } from "../../server/purchases";
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
   const input = req.body as { txHash?: unknown; walletAddress?: unknown } | undefined;
-  if (!isTransactionHash(input?.txHash)) return errorResponse(res, "A valid transaction hash is required.", 400);
-  if (!isWalletAddress(input?.walletAddress)) return errorResponse(res, "A valid wallet address is required.", 400);
+  if (!input || !isTransactionHash(input.txHash)) return errorResponse(res, "A valid transaction hash is required.", 400);
+  if (!isWalletAddress(input.walletAddress)) return errorResponse(res, "A valid wallet address is required.", 400);
 
   try {
     const result = await verifyTransaction(input.txHash, input.walletAddress);
