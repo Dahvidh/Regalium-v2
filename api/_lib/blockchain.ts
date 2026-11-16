@@ -17,7 +17,7 @@ export const EXPLORERS = {
   presale: `${POLYGON_AMOY.explorerUrl}/address/${CONTRACTS.presale}`,
 } as const;
 
-export const TRANSFER_EVENT_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55aaf7d6d5f";
+export const TRANSFER_EVENT_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
 export async function rpc<T>(method: string, params: unknown[] = []): Promise<T> {
   const response = await fetch(POLYGON_AMOY.rpcUrl, {
