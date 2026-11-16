@@ -1,5 +1,5 @@
-import type { ApiRequest, ApiResponse } from "./_lib/http";
-import { checkDatabase } from "./_lib/health";
+import type { ApiRequest, ApiResponse } from "../server/http";
+import { checkDatabase } from "../server/health";
 
 export default async function handler(_req: ApiRequest, res: ApiResponse) {
   try {
