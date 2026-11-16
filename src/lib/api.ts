@@ -1,6 +1,6 @@
-type ApiResult<T = unknown> = { data: T };
+type ApiResult<T = any> = { data: T };
 
-async function request<T = unknown>(method: string, path: string, body?: unknown): Promise<ApiResult<T>> {
+async function request<T = any>(method: string, path: string, body?: unknown): Promise<ApiResult<T>> {
   const response = await fetch(path, {
     method,
     headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" },
@@ -20,6 +20,6 @@ async function request<T = unknown>(method: string, path: string, body?: unknown
 }
 
 export const api = {
-  get: <T = unknown>(path: string) => request<T>("GET", path),
-  post: <T = unknown>(path: string, body: unknown) => request<T>("POST", path, body),
+  get: <T = any>(path: string) => request<T>("GET", path),
+  post: <T = any>(path: string, body: unknown) => request<T>("POST", path, body),
 };
