@@ -1,7 +1,7 @@
-import type { ApiRequest, ApiResponse } from "../../_lib/http";
-import { errorResponse, methodNotAllowed, queryString } from "../../_lib/http";
-import { isWalletAddress } from "../../_lib/blockchain";
-import { getWalletPurchases } from "../../_lib/purchases";
+import type { ApiRequest, ApiResponse } from "../../../server/http";
+import { errorResponse, methodNotAllowed, queryString } from "../../../server/http";
+import { isWalletAddress } from "../../../server/blockchain";
+import { getWalletPurchases } from "../../../server/purchases";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
