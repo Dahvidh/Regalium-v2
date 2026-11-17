@@ -1,4 +1,4 @@
-import { CONTRACTS, EXPLORERS, POLYGON_AMOY } from "./blockchain";
+import { CONTRACTS, EXPLORERS, POLYGON_AMOY } from "./blockchain.js";
 
 export function publicConfig() {
   return {
