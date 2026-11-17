@@ -3,6 +3,7 @@ name: Regalium migration checks
 on:
   push:
     branches:
+      - main
       - migration/remove-appdeploy-amoy
   pull_request:
     branches:
