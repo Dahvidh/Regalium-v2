@@ -1,4 +1,4 @@
-import { getSql } from "./db";
+import { getSql } from "./db.js";
 
 export async function checkDatabase() {
   const sql = getSql();
