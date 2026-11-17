@@ -3,7 +3,7 @@ export const POLYGON_AMOY = {
   chainIdHex: "0x13882",
   name: "Polygon Amoy",
   nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 },
-  rpcUrl: process.env.POLYGON_AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+  rpcUrl: process.env.POLYGON_AMOY_RPC_URL || "https://polygon-amoy-bor-rpc.publicnode.com",
   explorerUrl: "https://amoy.polygonscan.com",
 } as const;
 
@@ -19,16 +19,43 @@ export const EXPLORERS = {
 
 export const TRANSFER_EVENT_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
+const RPC_ENDPOINTS = [
+  process.env.POLYGON_AMOY_RPC_URL,
+  "https://polygon-amoy-bor-rpc.publicnode.com",
+  "https://polygon-amoy.drpc.org",
+].filter((url, index, all): url is string => Boolean(url) && all.indexOf(url) === index);
+
 export async function rpc<T>(method: string, params: unknown[] = []): Promise<T> {
-  const response = await fetch(POLYGON_AMOY.rpcUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: Date.now(), method, params }),
-  });
-  if (!response.ok) throw new Error(`Polygon RPC HTTP ${response.status}`);
-  const payload = await response.json() as { result?: T; error?: { message?: string } };
-  if (payload.error) throw new Error(payload.error.message || "Polygon RPC error");
-  return payload.result as T;
+  const failures: string[] = [];
+
+  for (const endpoint of RPC_ENDPOINTS) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: Date.now(), method, params }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = await response.json() as { result?: T; error?: { message?: string } };
+      if (payload.error) {
+        throw new Error(payload.error.message || "JSON-RPC error");
+      }
+      if (!("result" in payload)) {
+        throw new Error("JSON-RPC response did not contain a result");
+      }
+
+      return payload.result as T;
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "Unknown RPC error";
+      failures.push(message);
+    }
+  }
+
+  throw new Error(`All Polygon Amoy RPC endpoints failed: ${failures.join("; ")}`);
 }
 
 export function decodeUint256(value: string | undefined): bigint {
@@ -102,7 +129,7 @@ export async function getPresaleRate(): Promise<bigint> {
 }
 
 export function decimalToWei(value: string): bigint | null {
-  if (!/^(?:\d+\.?\d*|\.\d+)$/.test(value)) return null;
+  if (!/^(?:\\d+\\.?\\d*|\\.\\d+)$/.test(value)) return null;
   const [whole = "0", fraction = ""] = value.split(".");
   if (fraction.length > 18) return null;
   return BigInt(whole || "0") * 10n ** 18n + BigInt((fraction + "0".repeat(18)).slice(0, 18) || "0");
