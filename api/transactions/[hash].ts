@@ -1,6 +1,6 @@
-import type { ApiRequest, ApiResponse } from "../../server/http";
-import { errorResponse, methodNotAllowed, queryString } from "../../server/http";
-import { isTransactionHash, verifyTransaction } from "../../server/blockchain";
+import type { ApiRequest, ApiResponse } from "../../server/http.js";
+import { errorResponse, methodNotAllowed, queryString } from "../../server/http.js";
+import { isTransactionHash, verifyTransaction } from "../../server/blockchain.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
