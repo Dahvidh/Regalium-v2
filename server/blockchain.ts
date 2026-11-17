@@ -96,11 +96,8 @@ export async function verifyTransaction(txHash: string, walletAddress?: string) 
 }
 
 export async function getPresaleRate(): Promise<bigint> {
-  const signature = "rate()";
-  const bytes = new TextEncoder().encode(signature);
-  const encoded = `0x${Array.from(bytes).map(byte => byte.toString(16).padStart(2, "0")).join("")}`;
-  const hash = await rpc<string>("web3_sha3", [encoded]);
-  const raw = await rpc<string>("eth_call", [{ to: CONTRACTS.presale, data: hash.slice(0, 10) }, "latest"]);
+  // keccak256("rate()") first four bytes; avoid relying on optional web3_sha3 RPC support.
+  const raw = await rpc<string>("eth_call", [{ to: CONTRACTS.presale, data: "0x2c4e722e" }, "latest"]);
   return decodeUint256(raw);
 }
 
