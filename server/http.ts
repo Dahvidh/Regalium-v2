@@ -1,6 +1,7 @@
 export type ApiRequest = {
   method?: string;
-  query: Record<string, string | string[] | undefined>;
+  url?: string;
+  query?: Record<string, string | string[] | undefined>;
   body?: unknown;
 };
 
@@ -21,4 +22,16 @@ export function errorResponse(res: ApiResponse, message: string, status = 400) {
 
 export function queryString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? value[0] || "" : value || "";
+}
+
+export function requestQueryString(req: ApiRequest, key: string): string {
+  const parsed = queryString(req.query?.[key]);
+  if (parsed) return parsed;
+
+  if (!req.url) return "";
+  try {
+    return new URL(req.url, "http://localhost").searchParams.get(key) || "";
+  } catch {
+    return "";
+  }
 }
