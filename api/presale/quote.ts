@@ -1,12 +1,19 @@
 import type { ApiRequest, ApiResponse } from "../../server/http.js";
-import { errorResponse, methodNotAllowed, queryString } from "../../server/http.js";
+import { errorResponse, methodNotAllowed, requestQueryString } from "../../server/http.js";
 import { decimalToWei, getPresaleRate } from "../../server/blockchain.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-  const pol = queryString(req.query.pol);
+  const pol = requestQueryString(req, "pol");
   const polWei = decimalToWei(pol);
-  if (!polWei || polWei <= 0n) return errorResponse(res, "A positive POL amount with up to 18 decimal places is required.", 400);
+  if (!polWei || polWei <= 0n) {
+    console.warn("Presale quote received an invalid POL amount", {
+      url: req.url || null,
+      queryPolPresent: Boolean(req.query?.pol),
+      parsedPolPresent: Boolean(pol),
+    });
+    return errorResponse(res, "A positive POL amount with up to 18 decimal places is required.", 400);
+  }
   try {
     const rate = await getPresaleRate();
     if (rate <= 0n) return errorResponse(res, "The presale contract did not return a valid rate.", 503);
