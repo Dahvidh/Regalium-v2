@@ -2,8 +2,8 @@
 
 ## Test 1 - Verify the Regalium backend is reachable through the live DApp [sanity]
 Viewport: desktop
-Covers: AppDeploy backend health endpoint, frontend API integration, backend status indicator
-Description: Verifies the deployed frontend can reach its AppDeploy backend and exposes the resulting service state.
+Covers: Vercel API health endpoint, frontend API integration, backend status indicator
+Description: Verifies the deployed frontend can reach its independent Regalium API and exposes the resulting service state.
 Steps:
 1. Open the Regalium homepage
 2. Observe the project stats row
@@ -44,7 +44,7 @@ Expected: The DApp continues to show the transaction as confirmed and tells the 
 
 ## Test 5 - Read persisted purchase history for a connected wallet
 Viewport: desktop
-Covers: backend purchase-history API, database persistence, wallet-scoped records
+Covers: Neon-backed purchase-history API, database persistence, wallet-scoped records
 Description: Verifies previously backend-verified purchases can be retrieved for the same wallet without exposing another wallet's records.
 Steps:
 1. Use a wallet with at least one previously backend-verified purchase
