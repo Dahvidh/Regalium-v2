@@ -4,7 +4,7 @@ import { isTransactionHash, verifyTransaction } from "../../server/blockchain.js
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-  const hash = queryString(req.query.hash);
+  const hash = queryString(req.query?.hash);
   if (!isTransactionHash(hash)) return errorResponse(res, "Invalid transaction hash.", 400);
   try {
     return res.status(200).json(await verifyTransaction(hash));
