@@ -17,10 +17,15 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   try {
     const rate = await getPresaleRate();
     if (rate <= 0n) return errorResponse(res, "The presale contract did not return a valid rate.", 503);
+
+    // The deployed Presale.buyTokens() calculates tokenAmount = msg.value * rate.
+    // msg.value and the ERC-20 amount are both expressed in 18-decimal base units.
+    const rglmRaw = polWei * rate;
     return res.status(200).json({
       pol,
       rateRglmPerPolRaw: rate.toString(),
-      rglmRaw: (polWei * rate / 10n ** 18n).toString(),
+      rateRglmPerPol: rate.toString(),
+      rglmRaw: rglmRaw.toString(),
       decimals: 18,
       source: "presale-contract",
     });
