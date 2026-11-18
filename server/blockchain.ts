@@ -129,7 +129,7 @@ export async function getPresaleRate(): Promise<bigint> {
 }
 
 export function decimalToWei(value: string): bigint | null {
-  if (!/^(?:\\d+\\.?\\d*|\\.\\d+)$/.test(value)) return null;
+  if (!/^(?:\d+\.?\d*|\.\d+)$/.test(value)) return null;
   const [whole = "0", fraction = ""] = value.split(".");
   if (fraction.length > 18) return null;
   return BigInt(whole || "0") * 10n ** 18n + BigInt((fraction + "0".repeat(18)).slice(0, 18) || "0");
