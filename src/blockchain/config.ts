@@ -3,7 +3,8 @@ export const POLYGON_AMOY = {
     chainIdHex: '0x13882',
     name: 'Polygon Amoy',
     nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
-    rpcUrl: 'https://rpc-amoy.polygon.technology',
+    // Match the server-side Amoy RPC and avoid the unreliable legacy endpoint.
+    rpcUrl: 'https://polygon-amoy-bor-rpc.publicnode.com',
     explorerUrl: 'https://amoy.polygonscan.com',
 } as const;
 
