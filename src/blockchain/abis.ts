@@ -9,6 +9,7 @@ export const ERC20_ABI = [
 ] as const;
 
 export const PRESALE_ABI = [
+    { type: 'function', name: 'buyTokens', stateMutability: 'payable', inputs: [], outputs: [] },
     { type: 'function', name: 'rate', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'uint256' }] },
     { type: 'function', name: 'token', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'address' }] },
     { type: 'function', name: 'rglmToken', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'address' }] },
