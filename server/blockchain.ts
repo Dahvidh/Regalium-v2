@@ -78,6 +78,7 @@ function findRglmTransfer(logs: RpcLog[] | undefined, recipient: string) {
     if (normalizeAddress(log.address) !== CONTRACTS.rglm.toLowerCase()) continue;
     if (topics[0]?.toLowerCase() !== TRANSFER_EVENT_TOPIC) continue;
     if (decodeAddress(topics[1]) !== expectedSender) continue;
+    if (decodeAddress(topics[1]) !== CONTRACTS.presale.toLowerCase()) continue;
     if (decodeAddress(topics[2]) !== expectedRecipient) continue;
     const amountRaw = decodeUint256(log.data);
     if (amountRaw <= 0n) continue;
@@ -107,6 +108,14 @@ export async function verifyTransaction(txHash: string, walletAddress?: string) 
     ? findRglmTransfer(receipt?.logs, walletAddress as string)
     : null;
 
+  let expectedRglmAmountRaw: string | null = null;
+  let amountMatches = false;
+  if (transfer && tx.value) {
+    const rate = await getPresaleRate();
+    expectedRglmAmountRaw = (BigInt(tx.value) * rate).toString();
+    amountMatches = BigInt(transfer.amountRaw) === BigInt(expectedRglmAmountRaw);
+  }
+
   return {
     found: true,
     confirmed,
@@ -118,6 +127,8 @@ export async function verifyTransaction(txHash: string, walletAddress?: string) 
     txTo: normalizeAddress(tx.to),
     valueWei: tx.value || "0x0",
     blockNumber: receipt?.blockNumber || tx.blockNumber || null,
+    expectedRglmAmountRaw,
+    amountMatches,
     rglmTransfer: transfer,
   };
 }
