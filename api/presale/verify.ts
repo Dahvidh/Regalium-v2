@@ -17,8 +17,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (!result.fromMatches || !result.toMatches) {
       return errorResponse(res, "Transaction does not match the connected wallet and Regalium presale contract.", 422);
     }
-    if (!result.rglmTransfer || BigInt(result.rglmTransfer.amountRaw) <= 0n) {
-      return errorResponse(res, "Transaction succeeded, but no valid RGLM transfer to the connected wallet was found.", 422);
+    if (!result.rglmTransfer) {
+      return errorResponse(res, "Transaction succeeded, but no RGLM transfer from the presale contract to the connected wallet was found.", 422);
+    }
+    if (!result.amountMatches) {
+      return errorResponse(res, "The RGLM amount transferred does not match the POL payment and current presale rate.", 422);
     }
 
     await saveVerifiedPurchase({
