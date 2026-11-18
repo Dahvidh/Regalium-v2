@@ -5,7 +5,7 @@ import { getWalletPurchases } from "../../../server/purchases.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
-  const wallet = queryString(req.query.wallet);
+  const wallet = queryString(req.query?.wallet);
   if (!isWalletAddress(wallet)) return errorResponse(res, "Invalid wallet address.", 400);
   try {
     const items = await getWalletPurchases(wallet);
