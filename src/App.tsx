@@ -91,7 +91,7 @@ function LegacyApp() {
   }, []);
   if (hash === '#/tokenomics') return <LegalContentPage kind="tokenomics"/>;
   if (hash === '#/whitepaper') return <LegalContentPage kind="whitepaper"/>;
-  if (hash === '#/support') return <SupportPage/>; if (hash === '#/team') return <TeamPage/>; if (hash.startsWith('#/team/')) return <TeamProfilePage id={hash.slice(7)}/>;
+  if (hash === '#/support') return <SupportPage/>; if (hash === '#/team' || hash.startsWith('#/team/')) return <TeamPage/>;
   return <MainApp/>;
 }
 
