@@ -75,8 +75,8 @@ export default function RegaliumArena() {
 
     const floor = new THREE.GridHelper(42, 42, 0x5c477f, 0x302744);
     floor.position.y = -3.45;
-    (floor.material as THREE.Material).transparent = true;
-    (floor.material as THREE.Material).opacity = 0.25;
+    const floorMaterials = Array.isArray(floor.material) ? floor.material : [floor.material];
+    floorMaterials.forEach((material) => { material.transparent = true; material.opacity = 0.25; });
     scene.add(floor);
 
     const starsGeo = new THREE.BufferGeometry();
