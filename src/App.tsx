@@ -26,48 +26,88 @@ function MainApp() {
   const [wallet, setWallet] = useState<WalletState>(null); const [providers, setProviders] = useState<WalletProvider[]>([]); const providerMap = useRef(new Map<string, WalletProvider>()); const [activeProvider, setActiveProvider] = useState<Provider | null>(null); const [picker, setPicker] = useState(false); const [amount, setAmount] = useState('1'); const [rate, setRate] = useState<number | null>(null); const [terms, setTerms] = useState(false); const [notice, setNotice] = useState(''); const [status, setStatus] = useState<'idle' | 'pending' | 'confirmed' | 'failed'>('idle'); const [txHash, setTxHash] = useState(''); const [balance, setBalance] = useState<string | null>(null); const [balanceLoading, setBalanceLoading] = useState(false); const [mobileOpen, setMobileOpen] = useState(false); const [, setCopied] = useState(''); const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking'); const receive = useMemo(() => rate === null ? 0 : Math.max(0, Number(amount || 0)) * rate, [amount, rate]);
   useEffect(() => {
     const root = document.querySelector<HTMLElement>('#top');
-    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!root) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      gsap.set('.coin', { rotation: -13, rotationY: -12, rotationX: 0, transformPerspective: 1000 });
-      gsap.to('.coin', { y: -13, rotation: -9, duration: 4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      const heroEyebrow = root.querySelector('.hero .eyebrow');
+      const heroTitle = root.querySelector('.hero h1');
+      const heroCopy = root.querySelector('.hero p');
+      const heroButtons = root.querySelectorAll('.hero .primary-btn, .hero .secondary-btn');
+      const coinStage = root.querySelector('.coin-stage');
+      const coin = root.querySelector('.coin');
+      const floatCards = root.querySelectorAll('.float-card');
+
+      // The hero always gets an entrance. Reduced-motion users get a short fade
+      // without positional movement, rather than having all animation disabled.
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      intro
-        .fromTo('.hero .eyebrow', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.65 })
-        .fromTo('.hero h1', { autoAlpha: 0, y: 42, filter: 'blur(10px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 1.05 }, '-=0.28')
-        .fromTo('.hero p', { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.7 }, '-=0.52')
-        .fromTo('.hero .primary-btn, .hero .secondary-btn', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.1 }, '-=0.35')
-        .fromTo('.coin-stage', { autoAlpha: 0, scale: 0.88, rotate: -4 }, { autoAlpha: 1, scale: 1, rotate: 0, duration: 1.15 }, '-=0.8')
-        .fromTo('.float-card', { autoAlpha: 0, y: 18, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.65, stagger: 0.14 }, '-=0.55');
+      if (reduceMotion) {
+        [heroEyebrow, heroTitle, heroCopy, ...Array.from(heroButtons), coinStage, ...Array.from(floatCards)]
+          .filter((node): node is Element => node instanceof Element)
+          .forEach((node) => gsap.fromTo(node, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.28, delay: 0.04 }));
+      } else {
+        if (coin) {
+          gsap.set(coin, { rotation: -13, rotationY: -12, rotationX: 0, transformPerspective: 1000, transformOrigin: '50% 50%' });
+          gsap.to(coin, { y: -16, rotation: -7, duration: 3.4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        }
+        if (heroEyebrow) intro.fromTo(heroEyebrow, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.65 });
+        if (heroTitle) intro.fromTo(heroTitle, { autoAlpha: 0, y: 48, filter: 'blur(12px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 1.05 }, '-=0.28');
+        if (heroCopy) intro.fromTo(heroCopy, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.72 }, '-=0.52');
+        if (heroButtons.length) intro.fromTo(heroButtons, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.58, stagger: 0.12 }, '-=0.35');
+        if (coinStage) intro.fromTo(coinStage, { autoAlpha: 0, scale: 0.82, rotate: -5 }, { autoAlpha: 1, scale: 1, rotate: 0, duration: 1.2 }, '-=0.82');
+        if (floatCards.length) intro.fromTo(floatCards, { autoAlpha: 0, y: 22, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.16 }, '-=0.58');
+      }
 
-      gsap.utils.toArray<HTMLElement>(
-        'main > section:not(.hero) .section-kicker, main > section:not(.hero) .section-title, .info-card, .utility-card, .roadmap, .buy-card, .cta-panel, .faq'
-      ).forEach((element) => {
-        gsap.fromTo(element, { autoAlpha: 0, y: 30 }, {
-          autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out',
-          scrollTrigger: { trigger: element, start: 'top 88%', once: true }
+      const revealTargets = root.querySelectorAll<HTMLElement>(
+        'section:not(.hero) .section-kicker, section:not(.hero) .section-title, .info-card, .utility-card, .roadmap, .buy-card, .cta-panel, .faq, .stats .stat'
+      );
+      revealTargets.forEach((element) => {
+        if (reduceMotion) {
+          gsap.fromTo(element, { autoAlpha: 0 }, {
+            autoAlpha: 1,
+            duration: 0.28,
+            scrollTrigger: { trigger: element, start: 'top 94%', once: true }
+          });
+        } else {
+          gsap.fromTo(element, { autoAlpha: 0, y: 34 }, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.82,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: element, start: 'top 88%', once: true }
+          });
+        }
+      });
+
+      if (!reduceMotion && coinStage) {
+        gsap.to(coinStage, {
+          y: -34,
+          ease: 'none',
+          scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
         });
-      });
+      }
 
-      gsap.to('.coin-stage', {
-        y: -28, ease: 'none',
-        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
-      });
+      // Refresh after layout settles so below-the-fold reveals calculate
+      // correctly on both narrow mobile screens and desktop.
+      gsap.delayedCall(0.25, () => ScrollTrigger.refresh());
     }, root);
 
     const stage = root.querySelector<HTMLElement>('.coin-stage');
     const coin = root.querySelector<HTMLElement>('.coin');
     const onPointerMove = (event: PointerEvent) => {
-      if (!stage || !coin || event.pointerType === 'touch') return;
+      if (reduceMotion || !stage || !coin || event.pointerType === 'touch') return;
       const bounds = stage.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
       const x = (event.clientX - bounds.left) / bounds.width - 0.5;
       const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-      gsap.to(coin, { rotateY: x * 16 - 12, rotateX: y * -12, duration: 0.65, ease: 'power2.out', overwrite: true });
+      gsap.to(coin, { rotationY: x * 22 - 12, rotationX: y * -16, duration: 0.55, ease: 'power2.out', overwrite: 'auto' });
     };
     const onPointerLeave = () => {
-      if (coin) gsap.to(coin, { rotateX: 0, rotateY: -12, duration: 0.9, ease: 'elastic.out(1, 0.55)' });
+      if (!reduceMotion && coin) gsap.to(coin, { rotationX: 0, rotationY: -12, duration: 0.8, ease: 'power3.out', overwrite: 'auto' });
     };
     stage?.addEventListener('pointermove', onPointerMove);
     stage?.addEventListener('pointerleave', onPointerLeave);
+
     return () => {
       stage?.removeEventListener('pointermove', onPointerMove);
       stage?.removeEventListener('pointerleave', onPointerLeave);
