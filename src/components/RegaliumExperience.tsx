@@ -145,8 +145,9 @@ export default function RegaliumExperience() {
       if (dragging && event.pointerId === dragPointer) {
         const dx = event.clientX - lastX; const dy = event.clientY - lastY;
         lastX = event.clientX; lastY = event.clientY;
-        target.x = THREE.MathUtils.clamp(target.x + dx * 0.012, -1.25, 1.25);
-        target.y = THREE.MathUtils.clamp(target.y + dy * 0.009, -1.1, 1.1);
+        const sensitivity = event.pointerType === 'touch' ? 0.018 : 0.012;
+        target.x = THREE.MathUtils.clamp(target.x + dx * sensitivity, -1.6, 1.6);
+        target.y = THREE.MathUtils.clamp(target.y + dy * sensitivity * 0.75, -1.2, 1.2);
         return;
       }
       if (event.pointerType === 'touch') return;
@@ -180,14 +181,17 @@ export default function RegaliumExperience() {
       const elapsed = clock.getElapsedTime();
       pointer.lerp(target, reduced ? 0.04 : 0.055);
       if (!reduced) {
-        coin.rotation.y = pointer.x * 0.72 + Math.sin(elapsed * 0.24) * 0.12;
+        coin.rotation.y = elapsed * 0.18 + pointer.x * 0.72;
         coin.rotation.x = -pointer.y * 0.42 + Math.sin(elapsed * 0.32) * 0.035;
         coin.rotation.z = Math.sin(elapsed * 0.2) * 0.025;
         coin.position.y = Math.sin(elapsed * 0.62) * 0.07;
         halo.rotation.z = elapsed * 0.055;
         particles.rotation.y = elapsed * 0.012;
       } else {
-        coin.rotation.set(0, 0, 0);
+        // Reduced-motion users can still rotate the coin manually; only idle motion is disabled.
+        coin.rotation.y = pointer.x * 0.72;
+        coin.rotation.x = -pointer.y * 0.42;
+        coin.rotation.z = 0;
       }
       renderer.render(scene, camera);
       frame = requestAnimationFrame(render);
