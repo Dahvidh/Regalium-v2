@@ -4,10 +4,10 @@ import * as THREE from 'three';
 type Props = { active: number; onSelect: (index: number) => void };
 
 const nodes = [
-  { label: 'PLAY', sub: 'Game experiences', color: 0xd8b76c },
-  { label: 'EARN', sub: 'Player rewards', color: 0xb69aff },
-  { label: 'PARTICIPATE', sub: 'Events & campaigns', color: 0xe8d39a },
-  { label: 'USE', sub: 'Ecosystem utility', color: 0x9d83df },
+  { label: 'PLAY', sub: 'Game experiences', detail: 'A connected layer for supported games, challenges and player experiences.', color: 0xd8b76c },
+  { label: 'EARN', sub: 'Player rewards', detail: 'Reward mechanics designed to make eligible player activity transparent and verifiable.', color: 0xb69aff },
+  { label: 'PARTICIPATE', sub: 'Events & campaigns', detail: 'Campaigns and events can give players new ways to take part in the Regalium ecosystem.', color: 0xe8d39a },
+  { label: 'USE', sub: 'Ecosystem utility', detail: 'Planned utilities can connect RGLM with digital items, services and supported game features.', color: 0x9d83df },
 ];
 
 export default function RegaliumOrbit({ active, onSelect }: Props) {
@@ -171,6 +171,7 @@ export default function RegaliumOrbit({ active, onSelect }: Props) {
             <span className="orbit-control-index">0{index + 1}</span><span className="orbit-control-copy"><b>{node.label}</b><small>{node.sub}</small></span><span className="orbit-control-dot" />
           </button>
         ))}
+        <div className="orbit-detail" aria-live="polite"><span>SELECTED PILLAR</span><b>{nodes[active].label}</b><p>{nodes[active].detail}</p></div>
       </div>
     </div>
   );
