@@ -66,7 +66,7 @@ export default function RegaliumOrbit({ active, onSelect }: Props) {
       const glow = new THREE.PointLight(node.color, 1.8, 2.3);
       group.add(glow);
       root.add(group);
-      return { group, sphere, halo, angle };
+      return { group, sphere, halo };
     });
 
     scene.add(new THREE.AmbientLight(0xffffff, 1.1));
@@ -128,7 +128,7 @@ export default function RegaliumOrbit({ active, onSelect }: Props) {
         coreRing.rotation.z = t * .18;
         ring.rotation.z = t * .075;
         ring2.rotation.z = -t * .045;
-        orbitNodes.forEach(({ group, sphere, halo, angle }, i) => {
+        orbitNodes.forEach(({ group, sphere, halo }, i) => {
           const pulse = .94 + Math.sin(t * 1.4 + i * 1.3) * .08;
           group.scale.setScalar((i === activeRef.current ? 1.35 : 1) * pulse);
           sphere.rotation.y = t * .5;
