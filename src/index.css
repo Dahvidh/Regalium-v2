@@ -492,3 +492,7 @@ footer button:hover, footer a:hover { color: var(--gold-light); }
 @media (prefers-reduced-motion: reduce) {
   .coin { animation: none; }
 }
+
+
+/* GSAP owns the coin transform so pointer tilt and idle float stay in sync. */
+.coin { animation: none; }
