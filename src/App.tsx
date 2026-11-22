@@ -28,6 +28,8 @@ function MainApp() {
     const root = document.querySelector<HTMLElement>('#top');
     if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = gsap.context(() => {
+      gsap.set('.coin', { rotation: -13, rotationY: -12, rotationX: 0, transformPerspective: 1000 });
+      gsap.to('.coin', { y: -13, rotation: -9, duration: 4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
       intro
         .fromTo('.hero .eyebrow', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.65 })
@@ -59,7 +61,7 @@ function MainApp() {
       const bounds = stage.getBoundingClientRect();
       const x = (event.clientX - bounds.left) / bounds.width - 0.5;
       const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-      gsap.to(coin, { rotateY: x * 16 - 8, rotateX: y * -12, duration: 0.65, ease: 'power2.out', overwrite: true });
+      gsap.to(coin, { rotateY: x * 16 - 12, rotateX: y * -12, duration: 0.65, ease: 'power2.out', overwrite: true });
     };
     const onPointerLeave = () => {
       if (coin) gsap.to(coin, { rotateX: 0, rotateY: -12, duration: 0.9, ease: 'elastic.out(1, 0.55)' });
