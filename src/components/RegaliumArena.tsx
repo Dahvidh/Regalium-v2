@@ -44,7 +44,6 @@ export default function RegaliumArena() {
 
     const gold = new THREE.MeshStandardMaterial({ color: 0xd8b76c, metalness: 0.92, roughness: 0.22 });
     const violet = new THREE.MeshStandardMaterial({ color: 0x9875dc, metalness: 0.82, roughness: 0.24 });
-    const dark = new THREE.MeshStandardMaterial({ color: 0x171222, metalness: 0.8, roughness: 0.28 });
     const portal = new THREE.Group();
     world.add(portal);
 
