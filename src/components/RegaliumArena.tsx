@@ -132,24 +132,27 @@ export default function RegaliumArena() {
     resize();
 
     const clock = new THREE.Clock();
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const render = () => {
       if (visible && pageVisible) {
         const t = clock.getElapsedTime();
         pointer.lerp(target, 0.035);
-        world.rotation.y += (pointer.x * 0.22 - world.rotation.y) * 0.02;
-        world.rotation.x += (pointer.y * 0.16 - world.rotation.x) * 0.02;
-        portal.rotation.z = Math.sin(t * 0.12) * 0.035;
-        outer.rotation.y = t * 0.09;
-        inner.rotation.y = -t * 0.12;
-        inner2.rotation.z = t * 0.08;
-        core.rotation.x = t * 0.18;
-        core.rotation.y = t * 0.28;
-        coreRing.rotation.z = -t * 0.24;
-        coreRing2.rotation.x = t * 0.17;
-        stars.rotation.y = t * 0.006;
-        world.children.forEach((object, i) => {
-          if (object instanceof THREE.Mesh && i >= 3) object.rotation.y += 0.002 + (i % 3) * 0.0007;
-        });
+        if (!reducedMotion) {
+          world.rotation.y += (pointer.x * 0.22 - world.rotation.y) * 0.02;
+          world.rotation.x += (pointer.y * 0.16 - world.rotation.x) * 0.02;
+          portal.rotation.z = Math.sin(t * 0.12) * 0.035;
+          outer.rotation.y = t * 0.09;
+          inner.rotation.y = -t * 0.12;
+          inner2.rotation.z = t * 0.08;
+          core.rotation.x = t * 0.18;
+          core.rotation.y = t * 0.28;
+          coreRing.rotation.z = -t * 0.24;
+          coreRing2.rotation.x = t * 0.17;
+          stars.rotation.y = t * 0.006;
+          world.children.forEach((object, i) => {
+            if (object instanceof THREE.Mesh && i >= 3) object.rotation.y += 0.002 + (i % 3) * 0.0007;
+          });
+        }
         const tint = realms[activeRef.current].tint;
         (core.material as THREE.MeshStandardMaterial).color.setHex(tint);
         (fill.color as THREE.Color).setHex(tint);
