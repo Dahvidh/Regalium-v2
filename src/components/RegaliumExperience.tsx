@@ -132,19 +132,42 @@ export default function RegaliumExperience() {
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
     };
+    let dragging = false;
+    let dragPointer = -1;
+    let lastX = 0;
+    let lastY = 0;
+    const onPointerDown = (event: PointerEvent) => {
+      dragging = true; dragPointer = event.pointerId; lastX = event.clientX; lastY = event.clientY;
+      host.setPointerCapture?.(event.pointerId);
+      host.classList.add('is-dragging');
+    };
     const onPointerMove = (event: PointerEvent) => {
+      if (dragging && event.pointerId === dragPointer) {
+        const dx = event.clientX - lastX; const dy = event.clientY - lastY;
+        lastX = event.clientX; lastY = event.clientY;
+        target.x = THREE.MathUtils.clamp(target.x + dx * 0.012, -1.25, 1.25);
+        target.y = THREE.MathUtils.clamp(target.y + dy * 0.009, -1.1, 1.1);
+        return;
+      }
       if (event.pointerType === 'touch') return;
       const rect = host.getBoundingClientRect();
       target.x = ((event.clientX - rect.left) / rect.width - 0.5) * 0.75;
       target.y = ((event.clientY - rect.top) / rect.height - 0.5) * 0.55;
     };
-    const onPointerLeave = () => target.set(0, 0);
+    const onPointerUp = (event: PointerEvent) => {
+      if (event.pointerId !== dragPointer) return;
+      dragging = false; dragPointer = -1; host.classList.remove('is-dragging');
+    };
+    const onPointerLeave = () => { if (!dragging) target.set(0, 0); };
     const onVisibility = () => { pageVisible = !document.hidden; };
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { threshold: 0.05 });
     observer.observe(host);
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host);
+    host.addEventListener('pointerdown', onPointerDown);
     host.addEventListener('pointermove', onPointerMove);
+    host.addEventListener('pointerup', onPointerUp);
+    host.addEventListener('pointercancel', onPointerUp);
     host.addEventListener('pointerleave', onPointerLeave);
     document.addEventListener('visibilitychange', onVisibility);
     resize();
@@ -175,7 +198,10 @@ export default function RegaliumExperience() {
       cancelAnimationFrame(frame);
       observer.disconnect();
       resizeObserver.disconnect();
+      host.removeEventListener('pointerdown', onPointerDown);
       host.removeEventListener('pointermove', onPointerMove);
+      host.removeEventListener('pointerup', onPointerUp);
+      host.removeEventListener('pointercancel', onPointerUp);
       host.removeEventListener('pointerleave', onPointerLeave);
       document.removeEventListener('visibilitychange', onVisibility);
       scene.traverse((object) => {
@@ -194,7 +220,7 @@ export default function RegaliumExperience() {
     <div className="regalium-three-experience" ref={hostRef}>
       <div className="regalium-three-monogram" aria-hidden="true">R</div>
       <div className="regalium-three-wordmark" aria-hidden="true">RGLM</div>
-      <div className="regalium-three-hint"><span /> MOVE TO EXPLORE</div>
+      <div className="regalium-three-hint"><span /> DRAG TO ROTATE · TOUCH TO EXPLORE</div>
     </div>
   );
 }
