@@ -651,3 +651,67 @@ footer button:hover, footer a:hover { color: var(--gold-light); }
 .regalium-three-experience{cursor:grab;touch-action:pan-y}.regalium-three-experience.is-dragging{cursor:grabbing;user-select:none}.regalium-three-canvas{pointer-events:none}
 @media(max-width:767px){.roadmap-track{grid-template-columns:repeat(2,minmax(0,1fr))}.roadmap-detail-panel{grid-template-columns:1fr;gap:22px}.roadmap-stop-name{font-size:19px}.allocation-visual{grid-template-columns:1fr}.allocation-ring{width:190px}.token-facts-grid{grid-template-columns:1fr}.token-explorer-head{flex-direction:column}.supply-total{text-align:left}}
 @media(prefers-reduced-motion:reduce){.roadmap-stop,.allocation-tab,.allocation-ring,.roadmap-progress span{transition:none}.roadmap-stop:hover{transform:none}}
+
+
+/* Cinematic Regalium universe / immersive realm explorer */
+.regalium-arena-section{
+  position:relative;isolation:isolate;overflow:hidden;padding:clamp(54px,8vw,112px) max(20px,calc((100vw - 1240px)/2));
+  background:radial-gradient(ellipse at 78% 42%,rgba(104,72,161,.19),transparent 42%),radial-gradient(ellipse at 10% 85%,rgba(191,147,65,.08),transparent 36%),#08070d;
+  border-top:1px solid rgba(222,194,131,.12);border-bottom:1px solid rgba(222,194,131,.12)
+}
+.regalium-arena-section:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.18;background-image:linear-gradient(rgba(221,201,157,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(221,201,157,.07) 1px,transparent 1px);background-size:74px 74px;mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent)}
+.arena-topline,.arena-bottomline{display:flex;justify-content:space-between;gap:18px;color:rgba(231,210,166,.48);font-size:8px;letter-spacing:.24em}
+.arena-heading{display:grid;grid-template-columns:1fr minmax(220px,.48fr);align-items:end;gap:34px;margin:clamp(36px,6vw,76px) 0 24px}
+.arena-kicker{color:#d6b15a;font-size:9px;letter-spacing:.3em}
+.arena-heading h2{margin-top:17px;color:#f5eddf;font:500 clamp(50px,8.6vw,112px)/.83 Georgia,serif;letter-spacing:-.065em}
+.arena-heading h2 em{color:#d9b96f;font-style:normal;text-shadow:0 0 45px rgba(217,185,111,.17)}
+.arena-heading>p{max-width:360px;margin-bottom:5px;color:rgba(244,237,222,.48);font-size:13px;line-height:1.9}
+.arena-stage{position:relative;min-height:510px;border:1px solid rgba(218,190,126,.2);border-radius:4px;background:radial-gradient(ellipse at 48% 45%,rgba(91,64,132,.2),transparent 46%),linear-gradient(110deg,rgba(14,12,21,.96),rgba(7,7,12,.76));overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.04)}
+.arena-scene{position:absolute;inset:0 22% 0 0;min-width:0;overflow:hidden;touch-action:pan-y}
+.regalium-arena-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.arena-scene-caption{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;gap:7px;text-align:center;pointer-events:none;text-shadow:0 3px 22px #000}
+.arena-scene-caption span{color:#f0d99a;font:500 clamp(22px,3vw,36px)/1 Georgia,serif;letter-spacing:.3em}
+.arena-scene-caption small{color:rgba(239,221,177,.48);font-size:7px;letter-spacing:.24em;white-space:nowrap}
+.arena-interface{position:absolute;z-index:2;right:0;top:0;bottom:0;width:31%;min-width:260px;padding:26px 24px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,rgba(9,8,14,.76),rgba(9,8,14,.96));border-left:1px solid rgba(218,190,126,.15);backdrop-filter:blur(14px)}
+.arena-selector{display:grid;gap:8px}
+.arena-tab{display:grid;grid-template-columns:27px 1fr;gap:3px 10px;align-items:center;padding:14px 12px;border:1px solid rgba(255,255,255,.075);background:rgba(255,255,255,.018);text-align:left;color:rgba(255,255,255,.55);transition:background .25s,border-color .25s,color .25s}
+.arena-tab>span{grid-row:span 2;color:#d6b15a;font:12px Georgia,serif}
+.arena-tab>b{font-size:10px;letter-spacing:.17em}
+.arena-tab>i{font-style:normal;font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.32)}
+.arena-tab.active{border-color:rgba(220,188,113,.52);background:linear-gradient(110deg,rgba(214,177,90,.13),rgba(142,105,209,.09));color:#fff5dc;box-shadow:inset 2px 0 #d6b15a}
+.arena-tab.active>i{color:#d8bd81}
+.arena-detail{margin-top:22px;padding:18px 2px 0;border-top:1px solid rgba(218,190,126,.18)}
+.arena-detail>span{color:rgba(218,190,126,.68);font-size:7px;letter-spacing:.23em}
+.arena-detail h3{margin-top:9px;color:#f2e2bd;font:500 27px/1 Georgia,serif}
+.arena-detail p{margin-top:10px;color:rgba(255,255,255,.48);font-size:10px;line-height:1.8}
+.arena-detail-foot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;color:rgba(255,255,255,.28);font-size:6px;letter-spacing:.15em}
+.arena-bottomline{margin-top:18px;padding-top:17px;border-top:1px solid rgba(218,190,126,.12)}
+.arena-fallback{background:radial-gradient(circle at 48% 45%,rgba(202,166,92,.25),transparent 34%),radial-gradient(circle at 52% 50%,rgba(120,87,176,.3),transparent 58%)}
+@media(max-width:800px){
+ .arena-heading{grid-template-columns:1fr;gap:18px}
+ .arena-heading>p{max-width:540px}
+ .arena-stage{min-height:650px}
+ .arena-scene{inset:0 0 215px;height:auto}
+ .arena-interface{top:auto;left:0;right:0;bottom:0;width:auto;min-width:0;padding:15px 14px 17px;border-left:0;border-top:1px solid rgba(218,190,126,.15);background:rgba(9,8,14,.91)}
+ .arena-selector{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .arena-tab{grid-template-columns:1fr;gap:5px;padding:10px 9px;min-height:66px}
+ .arena-tab>span{grid-row:auto;font-size:10px}
+ .arena-tab>b{font-size:8px;letter-spacing:.1em}
+ .arena-tab>i{font-size:7px}
+ .arena-detail{margin-top:11px;padding-top:11px}
+ .arena-detail h3{font-size:21px}
+ .arena-detail p{font-size:9px;margin-top:6px;line-height:1.55}
+ .arena-detail-foot{margin-top:9px}
+ .arena-bottomline{flex-wrap:wrap;justify-content:flex-start;font-size:7px;gap:8px 18px}
+}
+@media(max-width:420px){
+ .arena-topline{font-size:7px;letter-spacing:.14em}
+ .arena-heading h2{font-size:clamp(48px,14vw,68px)}
+ .arena-stage{min-height:620px}
+ .arena-scene{bottom:220px}
+ .arena-detail-foot{font-size:5px}
+}
+@media(prefers-reduced-motion:reduce){
+ .arena-tab{transition:none}
+ .arena-tab:hover{transform:none}
+}
