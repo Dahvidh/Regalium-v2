@@ -48,6 +48,32 @@ export default function RegaliumExperience() {
     back.rotation.y = Math.PI;
     coin.add(back);
 
+    // Keep the RGLM mark physically attached to the coin so it turns with the 3D face.
+    const markCanvas = document.createElement('canvas');
+    markCanvas.width = 512;
+    markCanvas.height = 512;
+    const markContext = markCanvas.getContext('2d');
+    if (markContext) {
+      markContext.clearRect(0, 0, 512, 512);
+      markContext.textAlign = 'center';
+      markContext.textBaseline = 'middle';
+      markContext.fillStyle = '#241708';
+      markContext.font = 'bold 330px Georgia, serif';
+      markContext.fillText('R', 256, 235);
+      markContext.fillStyle = '#4b3516';
+      markContext.font = 'bold 34px Arial, sans-serif';
+      markContext.letterSpacing = '15px';
+      markContext.fillText('RGLM', 256, 390);
+    }
+    const markTexture = new THREE.CanvasTexture(markCanvas);
+    markTexture.colorSpace = THREE.SRGBColorSpace;
+    const mark = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.78, 1.78),
+      new THREE.MeshBasicMaterial({ map: markTexture, transparent: true, depthWrite: false })
+    );
+    mark.position.z = 0.17;
+    coin.add(mark);
+
     const addRing = (radius: number, tube: number, z: number, material: THREE.Material) => {
       const ring = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 12, 128), material);
       ring.position.z = z;
@@ -181,7 +207,7 @@ export default function RegaliumExperience() {
       const elapsed = clock.getElapsedTime();
       pointer.lerp(target, reduced ? 0.04 : 0.055);
       if (!reduced) {
-        coin.rotation.y = elapsed * 0.18 + pointer.x * 0.72;
+        coin.rotation.y = elapsed * 0.7 + pointer.x * 0.72;
         coin.rotation.x = -pointer.y * 0.42 + Math.sin(elapsed * 0.32) * 0.035;
         coin.rotation.z = Math.sin(elapsed * 0.2) * 0.025;
         coin.position.y = Math.sin(elapsed * 0.62) * 0.07;
@@ -215,6 +241,7 @@ export default function RegaliumExperience() {
           materials.forEach((material) => material.dispose());
         }
       });
+      markTexture.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -222,8 +249,6 @@ export default function RegaliumExperience() {
 
   return (
     <div className="regalium-three-experience" ref={hostRef}>
-      <div className="regalium-three-monogram" aria-hidden="true">R</div>
-      <div className="regalium-three-wordmark" aria-hidden="true">RGLM</div>
       <div className="regalium-three-hint"><span /> DRAG TO ROTATE · TOUCH TO EXPLORE</div>
     </div>
   );
