@@ -496,3 +496,47 @@ footer button:hover, footer a:hover { color: var(--gold-light); }
 
 /* GSAP owns the coin transform so pointer tilt and idle float stay in sync. */
 .coin { animation: none; }
+
+
+/* Three.js hero experience */
+.coin-stage { isolation: isolate; }
+.regalium-three-experience {
+  position: absolute; inset: 0; z-index: 1; display: grid; place-items: center;
+  min-width: 0; min-height: 100%; overflow: visible; touch-action: pan-y;
+}
+.regalium-three-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.regalium-three-monogram {
+  position: relative; z-index: 2; pointer-events: none; margin-top: -12px;
+  color: #211609; font: 900 clamp(104px,12vw,154px)/1 Georgia,serif;
+  text-shadow: 0 2px 0 rgba(255,255,255,.48), 0 10px 20px rgba(45,27,5,.28);
+  filter: drop-shadow(0 0 12px rgba(255,236,174,.16));
+}
+.regalium-three-wordmark {
+  position: absolute; z-index: 2; top: calc(50% + 75px); left: 50%;
+  transform: translateX(-50%); color: #30200b; pointer-events: none;
+  font: 900 10px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing: .55em;
+}
+.regalium-three-hint {
+  position: absolute; z-index: 3; bottom: 7%; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  color: rgba(240,217,157,.55); font-size: 9px; letter-spacing: .2em;
+  pointer-events: none;
+}
+.regalium-three-hint span {
+  width: 5px; height: 5px; border-radius: 50%; background: #e3c47b;
+  box-shadow: 0 0 12px rgba(227,196,123,.8);
+}
+.regalium-three-experience.three-fallback::before {
+  content: "R"; display: grid; place-items: center; width: 260px; aspect-ratio: 1;
+  border-radius: 50%; color: #211609; font: 900 150px Georgia,serif;
+  background: radial-gradient(circle at 34% 23%,#fff0bd 0%,#d4ae60 25%,#916b2b 65%,#4c3514 100%);
+  border: 10px solid #d9b86c; box-shadow: 0 35px 100px rgba(0,0,0,.55),0 0 80px rgba(217,184,108,.22);
+}
+@media (max-width: 767px) {
+  .regalium-three-monogram { font-size: 100px; }
+  .regalium-three-wordmark { top: calc(50% + 50px); }
+  .regalium-three-hint { bottom: 2%; font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .regalium-three-hint span { box-shadow: none; }
+}
