@@ -12,6 +12,8 @@ const nodes = [
 
 export default function RegaliumOrbit({ active, onSelect }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(active);
+  useEffect(() => { activeRef.current = active; }, [active]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -128,7 +130,7 @@ export default function RegaliumOrbit({ active, onSelect }: Props) {
         ring2.rotation.z = -t * .045;
         orbitNodes.forEach(({ group, sphere, halo, angle }, i) => {
           const pulse = .94 + Math.sin(t * 1.4 + i * 1.3) * .08;
-          group.scale.setScalar((i === active ? 1.35 : 1) * pulse);
+          group.scale.setScalar((i === activeRef.current ? 1.35 : 1) * pulse);
           sphere.rotation.y = t * .5;
           halo.rotation.z = t * .25;
           group.position.z = Math.sin(t * .7 + i) * .12;
@@ -156,7 +158,7 @@ export default function RegaliumOrbit({ active, onSelect }: Props) {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [active]);
+  }, []);
 
   return (
     <div className="regalium-orbit-wrap">
