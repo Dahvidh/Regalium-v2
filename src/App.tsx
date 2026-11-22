@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { api } from './lib/api';
 import { ArrowRight, Check, ChevronDown, Coins, Copy, ExternalLink, Gamepad2, Menu, RefreshCw, ShieldCheck, Sparkles, Trophy, Wallet, X, Zap } from 'lucide-react';
 type Provider = { request: (args: { method: string; params?: unknown[] }) => Promise<unknown>; on?: (event: string, handler: (...args: unknown[]) => void) => void; removeListener?: (event: string, handler: (...args: unknown[]) => void) => void };
@@ -7,6 +9,7 @@ import { hex } from './blockchain/rpc';
 
 type WalletProvider = { info: { uuid: string; name: string; icon?: string }; provider: Provider };
 type WalletState = { address: string; chainId: string; name: string } | null;
+gsap.registerPlugin(ScrollTrigger);
 const TOKEN = CONTRACTS.rglm; const PRESALE = CONTRACTS.presale; const CHAIN_ID = POLYGON_AMOY.chainIdHex; const NETWORK = POLYGON_AMOY.name; const EXPLORER = EXPLORERS.token; const PRESALE_EXPLORER = EXPLORERS.presale; const RPC = POLYGON_AMOY.rpcUrl; const short = (v: string) => `${v.slice(0, 7)}…${v.slice(-5)}`; const go = (route: string) => { window.location.hash = route; window.scrollTo(0, 0); }; const openCookies = () => window.dispatchEvent(new Event('regalium:open-cookie-settings')); 
 async function rpc(method: string, params: unknown[] = []) { const res = await fetch(RPC, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params }) }); if (!res.ok) throw new Error('RPC request failed'); const data = await res.json(); if (data.error) throw new Error(data.error.message || 'RPC error'); return data.result as string; }
 function encodeBalanceOf(address: string) { return `0x70a08231${address.replace(/^0x/, '').padStart(64, '0')}`; }
@@ -21,6 +24,55 @@ function SupportingBrandsCarousel(){const items=[...supportingStudios,...support
 function MainApp() {
   useEffect(() => { if (!document.cookie.includes('rglm_prefs=1')) document.cookie = `rglm_prefs=1; Max-Age=31536000; Path=/; SameSite=Strict${location.protocol === 'https:' ? '; Secure' : ''}`; if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(regs => Promise.all(regs.map(r => r.unregister()))).then(() => caches.keys()).then(keys => Promise.all(keys.filter(k => k.startsWith('regalium-')).map(k => caches.delete(k)))).then(() => navigator.serviceWorker.register('./sw.js')).catch(() => undefined); } }, []);
   const [wallet, setWallet] = useState<WalletState>(null); const [providers, setProviders] = useState<WalletProvider[]>([]); const providerMap = useRef(new Map<string, WalletProvider>()); const [activeProvider, setActiveProvider] = useState<Provider | null>(null); const [picker, setPicker] = useState(false); const [amount, setAmount] = useState('1'); const [rate, setRate] = useState<number | null>(null); const [terms, setTerms] = useState(false); const [notice, setNotice] = useState(''); const [status, setStatus] = useState<'idle' | 'pending' | 'confirmed' | 'failed'>('idle'); const [txHash, setTxHash] = useState(''); const [balance, setBalance] = useState<string | null>(null); const [balanceLoading, setBalanceLoading] = useState(false); const [mobileOpen, setMobileOpen] = useState(false); const [, setCopied] = useState(''); const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking'); const receive = useMemo(() => rate === null ? 0 : Math.max(0, Number(amount || 0)) * rate, [amount, rate]);
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>('#top');
+    if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = gsap.context(() => {
+      const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      intro
+        .fromTo('.hero .eyebrow', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.65 })
+        .fromTo('.hero h1', { autoAlpha: 0, y: 42, filter: 'blur(10px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 1.05 }, '-=0.28')
+        .fromTo('.hero p', { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.7 }, '-=0.52')
+        .fromTo('.hero .primary-btn, .hero .secondary-btn', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.1 }, '-=0.35')
+        .fromTo('.coin-stage', { autoAlpha: 0, scale: 0.88, rotate: -4 }, { autoAlpha: 1, scale: 1, rotate: 0, duration: 1.15 }, '-=0.8')
+        .fromTo('.float-card', { autoAlpha: 0, y: 18, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.65, stagger: 0.14 }, '-=0.55');
+
+      gsap.utils.toArray<HTMLElement>(
+        'main > section:not(.hero) .section-kicker, main > section:not(.hero) .section-title, .info-card, .utility-card, .roadmap, .buy-card, .cta-panel, .faq'
+      ).forEach((element) => {
+        gsap.fromTo(element, { autoAlpha: 0, y: 30 }, {
+          autoAlpha: 1, y: 0, duration: 0.78, ease: 'power2.out',
+          scrollTrigger: { trigger: element, start: 'top 88%', once: true }
+        });
+      });
+
+      gsap.to('.coin-stage', {
+        y: -28, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
+      });
+    }, root);
+
+    const stage = root.querySelector<HTMLElement>('.coin-stage');
+    const coin = root.querySelector<HTMLElement>('.coin');
+    const onPointerMove = (event: PointerEvent) => {
+      if (!stage || !coin || event.pointerType === 'touch') return;
+      const bounds = stage.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+      gsap.to(coin, { rotateY: x * 16 - 8, rotateX: y * -12, duration: 0.65, ease: 'power2.out', overwrite: true });
+    };
+    const onPointerLeave = () => {
+      if (coin) gsap.to(coin, { rotateX: 0, rotateY: -12, duration: 0.9, ease: 'elastic.out(1, 0.55)' });
+    };
+    stage?.addEventListener('pointermove', onPointerMove);
+    stage?.addEventListener('pointerleave', onPointerLeave);
+    return () => {
+      stage?.removeEventListener('pointermove', onPointerMove);
+      stage?.removeEventListener('pointerleave', onPointerLeave);
+      ctx.revert();
+    };
+  }, []);
+
   const addProvider = (p: WalletProvider) => { const key = p.info.uuid || p.info.name; if (!providerMap.current.has(key)) { providerMap.current.set(key, p); setProviders(Array.from(providerMap.current.values())); } };
   const discover = () => { window.dispatchEvent(new Event('eip6963:requestProvider')); const eth = (window as Window & { ethereum?: Provider & { providers?: Provider[] } }).ethereum; if (eth?.providers?.length) eth.providers.forEach((p, i) => addProvider({ info: { uuid: `injected-${i}`, name: `Injected wallet ${i + 1}` }, provider: p })); else if (eth) addProvider({ info: { uuid: 'injected', name: 'Browser wallet' }, provider: eth }); };
   const connect = async (p: WalletProvider) => { try { const accounts = await p.provider.request({ method: 'eth_requestAccounts' }) as string[]; const chainId = await p.provider.request({ method: 'eth_chainId' }) as string; setActiveProvider(p.provider); if (accounts?.[0]) setWallet({ address: accounts[0], chainId, name: p.info.name }); setPicker(false); setNotice(chainId === CHAIN_ID ? `${p.info.name} connected to ${NETWORK}.` : `${p.info.name} connected. Switch to ${NETWORK} before buying.`); } catch { setNotice('Wallet connection was rejected or cancelled.'); } };
